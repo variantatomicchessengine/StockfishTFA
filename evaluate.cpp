@@ -293,7 +293,7 @@ namespace {
 #ifndef ATOMIC_EVAL
         mobility[Us] += MobilityBonus[Pt][mob];
 #else
-        mobility[Us] += ATOMIC_MOBILITY_MULTIPLIER * MobilityBonus[Pt][mob];
+        mobility[Us] += ATOMIC_MOBILITY_MULTIPLIER * MobilityBonus[Pt][mob] / ATOMIC_MOBILITY_DIVISOR;
 #endif
 
         if (Pt == BISHOP || Pt == KNIGHT)

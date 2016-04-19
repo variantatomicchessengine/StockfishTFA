@@ -44,10 +44,52 @@
 
 extern int ATOMIC_MOBILITY_MULTIPLIER;
 
+extern int ATOMIC_MOBILITY_DIVISOR;
+
 extern int ATOMIC_GAME_PHASE_FACTOR;
 
 extern int ATOMIC_PASSED_PAWN_FACTOR;
 
 #endif
+
+const int MAX_MOVES = 256;
+const int MAX_PLY   = 128;
+
+enum Value : int {
+  VALUE_ZERO      = 0,
+  VALUE_DRAW      = 0,
+  VALUE_KNOWN_WIN = 10000,
+  VALUE_MATE      = 32000,
+  VALUE_INFINITE  = 32001,
+  VALUE_NONE      = 32002,
+
+  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
+  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
+
+#ifndef ATOMIC_EVAL
+
+  // default Stockfish piece values
+
+  PawnValueMg   = 198,   PawnValueEg   = 258,
+  KnightValueMg = 817,   KnightValueEg = 896,
+  BishopValueMg = 836,   BishopValueEg = 907,
+  RookValueMg   = 1270,  RookValueEg   = 1356,
+  QueenValueMg  = 2521,  QueenValueEg  = 2658,
+
+  MidgameLimit  = 15581, EndgameLimit  = 3998
+
+#else
+
+  PawnValueMg   = 250,   PawnValueEg   = 500,
+  KnightValueMg = 600,   KnightValueEg = 600,
+  BishopValueMg = 600,   BishopValueEg = 600,
+  RookValueMg   = 800,   RookValueEg   = 1200,
+  QueenValueMg  = 1400,  QueenValueEg  = 2400,
+
+  MidgameLimit  = 15581, EndgameLimit  = 3998
+
+#endif
+
+};
 
 #endif // #ifndef ATOMIC_H_INCLUDED

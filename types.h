@@ -102,9 +102,6 @@ const bool Is64Bit = false;
 typedef uint64_t Key;
 typedef uint64_t Bitboard;
 
-const int MAX_MOVES = 256;
-const int MAX_PLY   = 128;
-
 /// A move needs 16 bits to be stored
 ///
 /// bit  0- 5: destination square (from 0 to 63)
@@ -172,41 +169,6 @@ enum Bound {
   BOUND_UPPER,
   BOUND_LOWER,
   BOUND_EXACT = BOUND_UPPER | BOUND_LOWER
-};
-
-enum Value : int {
-  VALUE_ZERO      = 0,
-  VALUE_DRAW      = 0,
-  VALUE_KNOWN_WIN = 10000,
-  VALUE_MATE      = 32000,
-  VALUE_INFINITE  = 32001,
-  VALUE_NONE      = 32002,
-
-  VALUE_MATE_IN_MAX_PLY  =  VALUE_MATE - 2 * MAX_PLY,
-  VALUE_MATED_IN_MAX_PLY = -VALUE_MATE + 2 * MAX_PLY,
-
-#ifndef ATOMIC_EVAL
-
-  PawnValueMg   = 198,   PawnValueEg   = 258,
-  KnightValueMg = 817,   KnightValueEg = 896,
-  BishopValueMg = 836,   BishopValueEg = 907,
-  RookValueMg   = 1270,  RookValueEg   = 1356,
-  QueenValueMg  = 2521,  QueenValueEg  = 2658,
-
-  MidgameLimit  = 15581, EndgameLimit  = 3998
-
-#else
-
-  PawnValueMg   = 200,   PawnValueEg   = 500,
-  KnightValueMg = 550,   KnightValueEg = 500,
-  BishopValueMg = 550,   BishopValueEg = 500,
-  RookValueMg   = 700,   RookValueEg   = 1200,
-  QueenValueMg  = 1800,  QueenValueEg  = 2400,
-
-  MidgameLimit  = 15581, EndgameLimit  = 3998
-
-#endif
-
 };
 
 enum PieceType {
