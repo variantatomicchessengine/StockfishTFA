@@ -30,7 +30,7 @@
 #define ATOMIC_EVAL
 
 // atomic time management
-#define ATOMIC_TIMEMAN
+//#define ATOMIC_TIMEMAN
 
 // atomic options
 #define ATOMIC_OPTIONS
