@@ -26,6 +26,9 @@
 // atomic move generation
 #define ATOMIC
 
+// atomic move generation correction
+#define ATOMIC_CORR
+
 // atomic evaluation
 #define ATOMIC_EVAL
 

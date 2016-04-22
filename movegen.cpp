@@ -390,27 +390,45 @@ ExtMove* generate<EVASIONS>(const Position& pos, ExtMove* moveList) {
   Bitboard sliderAttacks = 0;
   Bitboard sliders = pos.checkers() & ~pos.pieces(KNIGHT, PAWN);
 #ifdef ATOMIC
-  // Blasts that explode the opposing king or explode all checkers
-  // are counted among evasive moves.
-  Bitboard kingAttacks = pos.attacks_from<KING>(pos.square<KING>(~us));
-  {
-    Bitboard target = pos.checkers(), b1 = pos.checkers();
-    while (b1)
-        target |= pos.attacks_from<KING>(pop_lsb(&b1));
-    if (more_than_one(pos.checkers()))
+  #ifndef ATOMIC_CORR
+    Bitboard kingAttacks = pos.attacks_from<KING>(pos.square<KING>(~us));
     {
-        b1 = pos.checkers();
-        while (b1)
+      // Blasts that explode the opposing king or explode all checkers
+      // are counted among evasive moves.
+      Bitboard target = pos.checkers(), b1 = pos.checkers();
+      while (b1)
+          target |= pos.attacks_from<KING>(pop_lsb(&b1));
+      if (more_than_one(pos.checkers()))
+      {
+          b1 = pos.checkers();
+          while (b1)
+          {
+              Square s = pop_lsb(&b1);
+              target &= pos.attacks_from<KING>(s) | s;
+          }
+      }
+      target |= kingAttacks;
+      target &= pos.pieces(~us) & ~pos.attacks_from<KING>(ksq);
+      moveList = (us == WHITE ? generate_all<WHITE, CAPTURES>(pos, moveList, target)
+                              : generate_all<BLACK, CAPTURES>(pos, moveList, target));
+    }
+  #else
+    Bitboard kingAttacks = pos.attacks_from<KING>(pos.square<KING>(~us));
+    {
+        // Blasts that explode the opposing king or explode all checkers
+        // are counted among evasive moves.
+        Bitboard target = pos.pieces(~us), b = pos.checkers();
+        while (b)
         {
-            Square s = pop_lsb(&b1);
+            Square s = pop_lsb(&b);
             target &= pos.attacks_from<KING>(s) | s;
         }
+        target |= kingAttacks;
+        target &= pos.pieces(~us) & ~pos.attacks_from<KING>(ksq);
+        moveList = (us == WHITE ? generate_all<WHITE, CAPTURES>(pos, moveList, target)
+                                : generate_all<BLACK, CAPTURES>(pos, moveList, target));
     }
-    target |= kingAttacks;
-    target &= pos.pieces(~us) & ~pos.attacks_from<KING>(ksq);
-    moveList = (us == WHITE ? generate_all<WHITE, CAPTURES>(pos, moveList, target)
-                            : generate_all<BLACK, CAPTURES>(pos, moveList, target));
-  }
+  #endif
 #endif
 
   // Find all the squares attacked by slider checkers. We will remove them from
@@ -437,10 +455,19 @@ ExtMove* generate<EVASIONS>(const Position& pos, ExtMove* moveList) {
 
   // Generate blocking evasions or captures of the checking piece
   Square checksq = lsb(pos.checkers());
-  Bitboard target = between_bb(checksq, ksq) | checksq;
-#ifdef ATOMIC
-  if(pos.attacks_from<KING>(ksq) & checksq)
-      target ^= checksq;
+#ifndef ATOMIC_CORR
+    Bitboard target = between_bb(checksq, ksq) | checksq;
+  #ifdef ATOMIC
+    if(pos.attacks_from<KING>(ksq) & checksq)
+        target ^= checksq;
+  #endif
+#else
+    Bitboard target;
+  #ifdef ATOMIC
+    target = between_bb(checksq, ksq); // Generate blocking evasions of the checking piece
+  #else
+    target = between_bb(checksq, ksq) | checksq;
+  #endif
 #endif
 
   return us == WHITE ? generate_all<WHITE, EVASIONS>(pos, moveList, target)
@@ -468,10 +495,18 @@ ExtMove* generate<LEGAL>(const Position& pos, ExtMove* moveList) {
 #ifndef ATOMIC
       if (   (pinned || from_sq(*cur) == ksq || type_of(*cur) == ENPASSANT)
 #else
+  #ifndef ATOMIC_CORR
       if (   (true || from_sq(*cur) == ksq || type_of(*cur) == ENPASSANT)   
+  #else
+      if (   (pinned || from_sq(*cur) == ksq || type_of(*cur) == ENPASSANT)
+  #endif
 #endif
           && !pos.legal(*cur, pinned))
           *cur = (--moveList)->move;
+#ifdef ATOMIC_CORR
+      else if (pos.capture(*cur) && !pos.legal(*cur, pinned))
+          *cur = (--moveList)->move;
+#endif
       else
           ++cur;
 
