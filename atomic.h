@@ -49,9 +49,13 @@ extern int ATOMIC_MOBILITY_MULTIPLIER;
 
 extern int ATOMIC_MOBILITY_DIVISOR;
 
-extern int ATOMIC_GAME_PHASE_FACTOR;
+extern int ATOMIC_GAME_PHASE_MULTIPLIER;
 
-extern int ATOMIC_PASSED_PAWN_FACTOR;
+extern int ATOMIC_GAME_PHASE_DIVISOR;
+
+extern int ATOMIC_PASSED_PAWN_MULTIPLIER;
+
+extern int ATOMIC_PASSED_PAWN_DIVISOR;
 
 #endif
 
@@ -82,6 +86,8 @@ enum Value : int {
   MidgameLimit  = 15581, EndgameLimit  = 3998
 
 #else
+
+  // atomic piece values
 
   PawnValueMg   = 250,   PawnValueEg   = 500,
   KnightValueMg = 600,   KnightValueEg = 600,

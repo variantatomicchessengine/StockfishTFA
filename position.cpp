@@ -464,7 +464,7 @@ Phase Position::game_phase() const {
   Value npm = st->nonPawnMaterial[WHITE] + st->nonPawnMaterial[BLACK];
 
 #ifdef ATOMIC_EVAL
-  npm += ATOMIC_GAME_PHASE_FACTOR * npm;
+  npm += ATOMIC_GAME_PHASE_MULTIPLIER * npm / ATOMIC_GAME_PHASE_DIVISOR;
 #endif
 
   npm = std::max(EndgameLimit, std::min(npm, MidgameLimit));

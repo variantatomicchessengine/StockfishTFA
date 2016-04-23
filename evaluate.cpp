@@ -583,7 +583,7 @@ namespace {
 #ifdef ATOMIC_EVAL
             if(true)
             {
-              ebonus += relative_rank(Us, s) * ATOMIC_PASSED_PAWN_FACTOR * rr;
+              ebonus += relative_rank(Us, s) * ATOMIC_PASSED_PAWN_MULTIPLIER * rr / ATOMIC_PASSED_PAWN_DIVISOR;
             }
             else
 #endif
